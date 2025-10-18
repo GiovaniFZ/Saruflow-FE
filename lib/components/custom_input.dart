@@ -6,6 +6,7 @@ class CustomInput extends StatefulWidget {
   final Color textColor;
   final TextInputType type;
   final bool obscureText;
+  final TextEditingController? controller; // <-- novo
 
   const CustomInput({
     super.key,
@@ -14,6 +15,7 @@ class CustomInput extends StatefulWidget {
     this.textColor = Colors.black,
     this.type = TextInputType.text,
     this.obscureText = false,
+    this.controller, // <-- novo
   });
 
   @override
@@ -22,16 +24,23 @@ class CustomInput extends StatefulWidget {
 
 class _CustomInputState extends State<CustomInput> {
   late TextEditingController _controller;
+  late bool _ownController;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    if (widget.controller != null) {
+      _controller = widget.controller!;
+      _ownController = false;
+    } else {
+      _controller = TextEditingController();
+      _ownController = true;
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (_ownController) _controller.dispose();
     super.dispose();
   }
 
@@ -46,10 +55,9 @@ class _CustomInputState extends State<CustomInput> {
           keyboardType: widget.type,
           obscureText: widget.obscureText,
           decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+            labelStyle: TextStyle(color: widget.textColor),
             filled: true,
             fillColor: widget.color,
-            labelStyle: TextStyle(color: widget.textColor),
           ),
           onTap: () async {
             final isDate = widget.type == TextInputType.datetime;
