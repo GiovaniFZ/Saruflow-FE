@@ -5,6 +5,14 @@ import 'package:flutter_app/components/avatar.dart';
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
 
+  static const exampleJson = [
+    {"x": 0, "y": 1},
+    {"x": 1, "y": 3},
+    {"x": 2, "y": 2},
+    {"x": 3, "y": 5},
+    {"x": 4, "y": 3},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,11 +34,8 @@ class Dashboard extends StatelessWidget {
                 lineBarsData: [
                   LineChartBarData(
                     spots: [
-                      FlSpot(0, 1),
-                      FlSpot(1, 3),
-                      FlSpot(2, 2),
-                      FlSpot(3, 5),
-                      FlSpot(4, 3),
+                      for (var point in exampleJson)
+                        FlSpot(point['x']!.toDouble(), point['y']!.toDouble()),
                     ],
                     isCurved: true,
                     barWidth: 4,
