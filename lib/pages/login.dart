@@ -17,6 +17,12 @@ class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  void showErrorMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
+
   Future<void> fetchData() async {
     final url = Uri.parse('http://localhost:3000/session');
     try {
@@ -28,13 +34,12 @@ class _LoginState extends State<Login> {
           'password': _passwordController.text,
         }),
       );
-      print(response.body);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         Navigator.pushNamed(context, '/dashboard');
       }
     } catch (e) {
-      print('Error during request: $e');
+      showErrorMessage('An error occurred. Please try again.');
     }
   }
 
