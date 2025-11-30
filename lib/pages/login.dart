@@ -36,7 +36,7 @@ class _LoginState extends State<Login> {
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        Navigator.pushNamed(context, '/dashboard');
+        Navigator.pushNamed(context, '/dashboard', arguments: data);
       }
     } catch (e) {
       showErrorMessage('An error occurred. Please try again.');
