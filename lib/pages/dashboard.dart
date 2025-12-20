@@ -9,13 +9,13 @@ class Dashboard extends StatefulWidget {
 
   @override
   State<Dashboard> createState() => _DashboardState();
-
 }
 
 class _DashboardState extends State<Dashboard> {
   List<Map<String, dynamic>> data = [];
   bool loading = false;
   bool _didFetch = false;
+  String name = '';
 
   void showErrorMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -29,14 +29,28 @@ class _DashboardState extends State<Dashboard> {
     try {
       final response = await http.get(
         url,
-        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
       );
       if (response.statusCode == 200) {
         final parsed = jsonDecode(response.body);
         final graphic = parsed['graphic'] as List<dynamic>;
         List<Map<String, dynamic>> points = [];
-        for (var item in graphic) {
-          points.add(({'x': item['xAxis'], 'y': item['yAxis']}));
+        for (final item in graphic) {
+          final xRaw = item['xAxis'];
+          final yRaw = item['yAxis'];
+          final itemName = (item['name'] as String?)?.trim();
+
+          if (itemName != null && itemName.isNotEmpty) {
+            name = itemName;
+          }
+
+          if (xRaw == null || yRaw == null) continue;
+          if (xRaw is! num || yRaw is! num) continue;
+
+          points.add({'x': xRaw.toDouble(), 'y': yRaw.toDouble()});
         }
         setState(() {
           data = points;
@@ -45,7 +59,6 @@ class _DashboardState extends State<Dashboard> {
         showErrorMessage('Falha ao carregar dados: ${response.statusCode}');
       }
     } catch (e) {
-      print(e);
       showErrorMessage('Ocorreu um erro. Tente novamente.');
     } finally {
       setState(() => loading = false);
@@ -61,7 +74,8 @@ class _DashboardState extends State<Dashboard> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_didFetch) {
-      final Map<String, dynamic>? args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final Map<String, dynamic>? args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       final String token = args?['token'] ?? '';
       fetchData(token);
       _didFetch = true;
@@ -74,7 +88,7 @@ class _DashboardState extends State<Dashboard> {
       backgroundColor: Colors.white,
       body: ListView(
         children: [
-          Avatar(text: 'Luks'),
+          Avatar(text: name),
           Padding(
             padding: const EdgeInsets.all(10),
             child: Text(
