@@ -12,12 +12,7 @@ class Avatar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundImage: NetworkImage(
-              'https://avatars.githubusercontent.com/u/90426410?v=4',
-            ),
-          ),
+          CircleAvatar(radius: 50, backgroundColor: Colors.black),
           if (text.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(left: 16),
@@ -27,10 +22,7 @@ class Avatar extends StatelessWidget {
                 children: [
                   Text(
                     'Welcome again,',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
