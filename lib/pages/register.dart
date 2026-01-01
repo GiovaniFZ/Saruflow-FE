@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/components/custom_button.dart';
 import 'package:flutter_app/components/custom_input.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_app/common/show_message.dart';
 import 'dart:convert';
 
 class Register extends StatefulWidget {
@@ -16,18 +17,6 @@ class _RegisterState extends State<Register> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
-  void showSuccessMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.green),
-    );
-  }
-
-  void showErrorMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
-    );
-  }
-
   Future<void> createUser() async {
     final url = Uri.parse('http://localhost:3000/user');
     try {
@@ -40,14 +29,18 @@ class _RegisterState extends State<Register> {
           'password': _passwordController.text,
         }),
       );
+      if (!mounted) return;
       if (response.statusCode == 201) {
-        showSuccessMessage('Registration successful!');
+        showSuccessMessage('Registration successful!', context);
         Navigator.pushNamed(context, '/login');
       } else {
-        showErrorMessage('Registration failed: ${response.statusCode}');
+        showErrorMessage(
+          'Registration failed: ${response.statusCode}',
+          context,
+        );
       }
     } catch (e) {
-      showErrorMessage('An error occurred. Please try again.');
+      showErrorMessage('An error occurred. Please try again.', context);
     }
   }
 
@@ -87,9 +80,21 @@ class _RegisterState extends State<Register> {
                     style: TextStyle(fontSize: 15, color: Colors.black),
                   ),
                 ),
-                CustomInput(label: 'NAME', controller: _nameController, type: TextInputType.text),
-                CustomInput(label: 'EMAIL', type: TextInputType.emailAddress, controller: _emailController),
-                CustomInput(label: 'PASSWORD', obscureText: true, controller: _passwordController),
+                CustomInput(
+                  label: 'NAME',
+                  controller: _nameController,
+                  type: TextInputType.text,
+                ),
+                CustomInput(
+                  label: 'EMAIL',
+                  type: TextInputType.emailAddress,
+                  controller: _emailController,
+                ),
+                CustomInput(
+                  label: 'PASSWORD',
+                  obscureText: true,
+                  controller: _passwordController,
+                ),
                 CustomInput(
                   label: 'DATE OF BIRTH',
                   type: TextInputType.datetime,

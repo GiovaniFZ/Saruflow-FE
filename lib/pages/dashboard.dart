@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_app/components/avatar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_app/common/show_message.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -16,12 +17,6 @@ class _DashboardState extends State<Dashboard> {
   bool loading = false;
   bool _didFetch = false;
   String name = '';
-
-  void showErrorMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
-    );
-  }
 
   Future<void> fetchData(String token) async {
     final url = Uri.parse('http://localhost:3000/graphic');
@@ -56,10 +51,15 @@ class _DashboardState extends State<Dashboard> {
           data = points;
         });
       } else {
-        showErrorMessage('Falha ao carregar dados: ${response.statusCode}');
+        if (!mounted) return;
+        showErrorMessage(
+          'Falha ao carregar dados: ${response.statusCode}',
+          context,
+        );
       }
     } catch (e) {
-      showErrorMessage('Ocorreu um erro. Tente novamente.');
+      if (!mounted) return;
+      showErrorMessage('Ocorreu um erro. Tente novamente.', context);
     } finally {
       setState(() => loading = false);
     }
